@@ -22,7 +22,7 @@ def trajectory(v_init, a_init, h_init, v_air):
     v_init += (random.random() - .5) * 5.0
     a_init += (random.random() - .5) * 4.0
     h_init += (random.random() - .5) * 2.0
-    v_air += (random.random() - .5) * 2.0
+    v_air += max(0, (random.random() - .5) * 2.0)
     rho_l = rho * (1 + (random.random() - .5) * 0.2)
 
     # Luftwiderstand (Wert und Richtung)

@@ -19,10 +19,11 @@ def trajectory(v_init, a_init, h_init, v_air):
     import random, math
 
     # Füge Unsicherheit hinzu
-    v_init += (random.random() - .5) * 5.0
-    a_init += (random.random() - .5) * 4.0
-    h_init += (random.random() - .5) * 2.0
-    v_air += (random.random() - .5) * 2.0
+    # Füge Unsicherheit hinzu
+    v_init += (random.random() - .5) * 2.0 
+    a_init += (random.random() - .5) * 4.0 
+    h_init += (random.random() - .5) * 0.1 
+    v_air += max(0, (random.random() - .5) * 2.0)
     rho_l = rho * (1 + (random.random() - .5) * 0.2)
 
     # Luftwiderstand (Wert und Richtung)
@@ -43,7 +44,8 @@ def trajectory(v_init, a_init, h_init, v_air):
 
     # Euler-vorwärts-Integration
     # ... solange bis der Ball die Nullinie von oben schneidet
-    while h_low or 0 < r_y:
+    ite = 0
+    while (h_low or 0 < r_y) and ite<10000:
         (f_a, b_a) = air_drag(v_x, v_y, v_air, rho_l)
 
         a_x = -f_a * math.cos(b_a)
@@ -56,6 +58,8 @@ def trajectory(v_init, a_init, h_init, v_air):
 
         if h_low:
             h_low = 0 >= r_y
+            
+        ite+=1
 
     return r_x
 

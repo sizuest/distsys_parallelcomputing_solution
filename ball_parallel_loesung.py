@@ -12,7 +12,7 @@ from progressbar import print_progress
 
 
 # Trajektorie eines geworfenen Balls
-def trajectory(v_init, a_init, h_init, v_air, n=1):
+def trajectory(v_init_0, a_init_0, h_init_0, v_air_0, n=1):
     import random, math
 
     # Konstanten
@@ -21,7 +21,7 @@ def trajectory(v_init, a_init, h_init, v_air, n=1):
     rho = 1.2  # Luftdichte [kg/m^3]
     d = 0.068  # Balldurchmesser [m]
     m = 0.057  # Ballmassen [kg]
-    dt = 0.01  # Schrittweite [s]
+    dt = 0.1  # Schrittweite [s]
 
     # Luftwiderstand (Wert und Richtung)
     def air_drag(v_x, v_y, v_air, rho_l):
@@ -31,13 +31,15 @@ def trajectory(v_init, a_init, h_init, v_air, n=1):
         return f_a, a_a
 
     result = list()
+    
+    
 
     for i in range(0,n):
         # Füge Unsicherheit hinzu
-        v_init += (random.random() - .5) * 5.0
-        a_init += (random.random() - .5) * 4.0
-        h_init += (random.random() - .5) * 2.0
-        v_air += (random.random() - .5) * 2.0
+        v_init = v_init_0 + (random.random() - .5) * 2.0
+        a_init = a_init_0 + (random.random() - .5) * 4.0
+        h_init = h_init_0 + (random.random() - .5) * 0.1
+        v_air = v_air_0 + max(0, (random.random() - .5) * 2.0)
         rho_l = rho * (1 + (random.random() - .5) * 0.2)
 
         # Initialisierung
@@ -52,7 +54,9 @@ def trajectory(v_init, a_init, h_init, v_air, n=1):
         # Euler-vorwärts-Integration
         # ... solange bis der Ball die Nullinie von oben schneidet
         
-        while h_low or 0 < r_y:
+        ite = 0
+        
+        while (h_low or 0 < r_y) and ite<100000:
             (f_a, b_a) = air_drag(v_x, v_y, v_air, rho_l)
 
             a_x = -f_a * math.cos(b_a)
@@ -65,6 +69,8 @@ def trajectory(v_init, a_init, h_init, v_air, n=1):
 
             if h_low:
                 h_low = 0 >= r_y
+                
+            ite+=1
                 
         result.append(r_x)
 
@@ -118,7 +124,7 @@ def job_callback(job):  # executed at the client
 
             # extract the results for each job as it happens
             dist_results = job.result  # returns results from job
-            distance += dist_results
+            distance = distance + dist_results
 
             if len(pending_jobs) <= lower_bound:
                 jobs_cond.notify()
@@ -147,7 +153,7 @@ if __name__ == '__main__':
     v_air = args.v_air
     n_runs = args.n_runs
     
-    n_sim_per_run = 1
+    n_sim_per_run = 50
 
     server_nodes = ["octapi-s2.simple.eee.intern", 
                     "octapi-s3.simple.eee.intern", 
