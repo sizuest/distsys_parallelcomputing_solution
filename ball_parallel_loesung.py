@@ -101,7 +101,7 @@ def histogram(d):
 # Job callback für dispy
 def job_callback(job):  # executed at the client
     global pending_jobs, jobs_cond, no_of_jobs_finished, n_runs
-    global distance
+    global distance, lower_bound
     global n_sim_per_run
 
     if (job.status == dispy.DispyJob.Finished  # most usual case
@@ -122,6 +122,7 @@ def job_callback(job):  # executed at the client
 
             if len(pending_jobs) <= lower_bound:
                 jobs_cond.notify()
+                
         jobs_cond.release()
 
 
@@ -146,10 +147,24 @@ if __name__ == '__main__':
     v_air = args.v_air
     n_runs = args.n_runs
     
-    n_sim_per_run = 50
+    n_sim_per_run = 1
 
-    server_nodes = ['10.180.254.60', '10.180.254.75', '10.180.254.77', '10.180.254.78', '10.180.254.85', '10.180.254.91']
-    master_node = '10.180.254.79'
+    server_nodes = ["octapi-s2.simple.eee.intern", 
+                    "octapi-s3.simple.eee.intern", 
+                    "octapi-s4.simple.eee.intern", 
+                    "octapi-s5.simple.eee.intern", 
+                    "octapi-s6.simple.eee.intern", 
+                    "octapi-s7.simple.eee.intern", 
+                    "octapi-s8.simple.eee.intern", 
+                    "octapi-s9.simple.eee.intern", 
+                    "octapi-s10.simple.eee.intern", 
+                    "octapi-s11.simple.eee.intern", 
+                    "octapi-s12.simple.eee.intern", 
+                    "octapi-s13.simple.eee.intern", 
+                    "octapi-s14.simple.eee.intern", 
+                    "octapi-s15.simple.eee.intern", 
+                    "octapi-s16.simple.eee.intern"]
+    master_node = 'octapi-s16.simple.eee.intern'
 
     # use Condition variable to protect access to pending_jobs, as
     # 'job_callback' is executed in another thread
@@ -157,7 +172,7 @@ if __name__ == '__main__':
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))  # doesn't matter if 8.8.8.8 can't be reached
     cluster = dispy.SharedJobCluster(trajectory, nodes=server_nodes, callback=job_callback, host=s.getsockname()[0],
-                                     loglevel=logging.DEBUG, scheduler_host=master_node, exclusive=False)
+                                     loglevel=logging.INFO, scheduler_host=master_node, exclusive=False)
 
     pending_jobs = {}
     no_of_jobs_finished = 0

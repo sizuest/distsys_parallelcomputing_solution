@@ -85,7 +85,7 @@ if __name__ == '__main__':
                     "octapi-s14.simple.eee.intern", 
                     "octapi-s15.simple.eee.intern", 
                     "octapi-s16.simple.eee.intern"]
-    master_node = 'octapi-s2.simple.eee.intern'
+    master_node = 'octapi-s16.simple.eee.intern'
 
     # use Condition variable to protect access to pending_jobs, as
     # 'job_callback' is executed in another thread
