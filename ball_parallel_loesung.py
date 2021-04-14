@@ -178,7 +178,7 @@ if __name__ == '__main__':
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))  # doesn't matter if 8.8.8.8 can't be reached
     cluster = dispy.SharedJobCluster(trajectory, nodes=server_nodes, callback=job_callback, host=s.getsockname()[0],
-                                     loglevel=logging.INFO, scheduler_host=master_node, exclusive=False)
+                                     loglevel=logging.INFO, scheduler_host=master_node, exclusive=False, reentrant=True)
 
     pending_jobs = {}
     no_of_jobs_finished = 0
